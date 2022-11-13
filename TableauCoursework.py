@@ -20,8 +20,8 @@ class Node:
                 if (parts[1]=="^"):                 # Alpha formula
                     p = Node(parts[0],self)
                     self.children = [p]
-                    self.children[0].createNodes([parts[2]])
                     p.closeBranch()
+                    self.children[0].createNodes([parts[2]])
                 elif (parts[1]=="v"):               # Beta formula
                     p1 = Node(parts[0],self)
                     p2 = Node(parts[2],self)
@@ -61,9 +61,6 @@ class Node:
         closingNode = self.findClosingNode()
         if closingNode == None: return None
         current = self
-        while current != closingNode:
-            current.closed = True
-            current = current.parent
         while current != None:
             nonClosedChildren = len(current.children)
             for i in range(len(current.children)):
@@ -76,180 +73,6 @@ class Node:
                 break
         return closingNode
 
-        
-        
-
-##    def evaluate(self):
-##        fmla = self.formula
-##        if (" " in fmla):
-##            return
-##
-##        # if overload of -, reduce down
-##        truth = True
-##        negationCount = 0
-##        for i in range(len(fmla)):
-##            if (fmla[i] == "-"):
-##                negationCount+=1
-##                truth = not truth
-##            if (fmla[i] != "-"):
-##                fmla = fmla[i:]
-##                break
-##        if (negationCount>1):
-##            return [("-"*(negationCount%2))+fmla]
-##
-##        if len(fmla)==1:
-##            if fmla in ["p","q","r","s"]:
-##                return []
-##            else:
-##                return
-##        pred = ["P","Q","R","S"]
-##        var = ["x","y","z","w","a","b","c","d","e","f","g","h","i","j"]
-##        if (len(fmla)==6):              # case of PRED(var, var)
-##            if fmla[0] in pred:
-##                if fmla[1]=="(" and fmla[3]=="," and fmla[5]==")" and fmla[2] in var and fmla[4] in var:
-##                    return []
-##                else:
-##                    return
-##        elif (len(fmla)==7):            # case of -PRED(var, var)
-##            if fmla[0]=="-" and fmla[2]=="(" and fmla[4]=="," and fmla[6]==")":
-##                return []
-##
-##        # check for E and A outside of brackets
-##        quantifier = ["E","A"]
-##        for i in range(2):
-##            if fmla[0]==quantifier[i]:
-##                if truth:
-##                    return [fmla[0],fmla[1],fmla[2:]]
-##                else:
-##                    return [quantifier[i-1]+fmla[1] + "-" + fmla[2:]]
-##                
-##        # check remaining in overall brackets        
-##        if (fmla[0]=="(" and fmla[-1]==")"):
-##            fmla = fmla[1:-1]
-##        else:
-##            return
-##
-##        otherChars = ["-","E","A"]
-##        brackets = 0
-##        subForm = ""
-##        parts = []
-##        # inside overall brackets
-##        started = False
-##        operations = ["^","v",">"]
-##        for i in range(len(fmla)):
-##            letter = fmla[i]
-##            if (letter in operations):
-##                started = True
-##            if (letter=="("):
-##                brackets+=1
-##                subForm += letter
-##            elif (letter==")"):
-##                brackets-=1
-##                subForm += letter
-##            elif (brackets==0 and started):
-##                parts.append(subForm)
-##                parts.append(letter)
-##                subForm = ""
-##                started = False
-##            else:
-##                subForm += letter
-##        if (brackets==0):
-##            parts.append(subForm)
-##        else:
-##            return
-##        # check operation validity
-##        if (len(parts) != 3):
-##            return
-##        op = parts[1]
-##        if not (op in operations):
-##            return
-##
-##        # do any switches required so only ^,v used for alpha, beta
-##        if (truth and op==">"):
-##            parts[0] = "-"+parts[0]
-##            parts[1] = "v"
-##        elif (not truth and op==">"):
-##            parts[2] = "-"+parts[2]
-##            parts[1] = "^"
-##        elif (not truth and op=="^"):
-##            parts[0] = "-"+parts[0]
-##            parts[1] = "v"
-##            parts[2] = "-"+parts[2]
-##        elif (not truth and op=="v"):
-##            parts[0] = "-"+parts[0]
-##            parts[1] = "^"
-##            parts[2] = "-"+parts[2]
-##        
-##        return parts
-##
-##    def parseImmediate(self):
-##        fmla = self.formula
-##        if (" " in fmla):
-##            return 0
-##
-##        # if overload of -, reduce down
-##        if (fmla[0] == "-"):
-##            if ("," in fmla) or ("E"  in fmla) or ("A" in fmla):
-##                return 2
-##            else:
-##                return 7
-##
-##        if len(fmla)==1:
-##            return 6
-##        if (len(fmla)==6):
-##            if fmla[1]=="(" and fmla[3]=="," and fmla[5]==")":
-##                return 1
-##        if fmla[0]=="E":
-##            return 4
-##        if fmla[0]=="A":
-##            return 3
-##            
-##                
-##        # check remaining in overall brackets        
-##        if (fmla[0]=="(" and fmla[-1]==")"):
-##            fmla = fmla[1:-1]
-##        else:
-##            return 0
-##
-##        otherChars = ["-","E","A"]
-##        brackets = 0
-##        subForm = ""
-##        parts = []
-##        # inside overall brackets
-##        started = False
-##        operations = ["^","v",">"]
-##        for i in range(len(fmla)):
-##            letter = fmla[i]
-##            if (letter in operations):
-##                started = True
-##            if (letter=="("):
-##                brackets+=1
-##                subForm += letter
-##            elif (letter==")"):
-##                brackets-=1
-##                subForm += letter
-##            elif (brackets==0 and started):
-##                parts.append(subForm)
-##                parts.append(letter)
-##                subForm = ""
-##                started = False
-##            else:
-##                subForm += letter
-##        if (brackets==0):
-##            parts.append(subForm)
-##        else:
-##            return 0
-##        if (len(parts) != 3):
-##            return 0
-##        op = parts[1]
-##        if not (op in operations):
-##            return 0
-##
-##        self.parseParts = parts
-##        if ("," in fmla) or ("E"  in fmla) or ("A" in fmla):
-##            return 5
-##        else:
-##            return 8
 
 
     def parseFMLA(self):
@@ -294,6 +117,9 @@ class Node:
                     self.parseParts = [0]
                     return
 
+        if isFO and len(fmla)<6:
+            self.parseParts = [0]
+            return
         if isFO and len(fmla)==6:       # PRED(VAR,VAR)
             if ((fmla[0] in PRED) and (fmla[1]=="(") and (fmla[2] in VAR) and (fmla[3]==",") and
                 (fmla[4] in VAR) and (fmla[5]==")")):
@@ -415,10 +241,19 @@ class Tableau:
         self.gammaQueue = []
         self.theories = theories
         self.satisfiable = None
+        for c in range(len(formula)):
+            if formula[c] in ["E","A"]:
+                if c==len(formula)-1: self.satisfiable = 4
+                else:
+                    if not (formula[c+1] in ["x","y","z","w"]):
+                        self.satisfiable = 4
 
     def isSatisfiable(self):
+        if self.satisfiable==4: return
         for t in range(len(self.theories)):
-            self.root.createNodes(self.theories[i])
+            self.root.createNodes([self.theories[t]])
+        if (self.root.closed):
+            self.root.parseFMLA()
         self.addBranches(self.root)
         if self.satisfiable==None:
             self.satisfiable = 1
@@ -481,6 +316,11 @@ class Tableau:
                             gProp[i] = True
                             parts = self.changeConst(parts,self.prop[i])
                             break
+                        if gProp[i]==False and self.propUsed[i]==False:
+                            gProp[i] = True
+                            self.propUsed[i] = True
+                            parts = self.changeConst(parts,self.prop[i])
+                            break
                     self.gammaQueue.append([current,gProp])
 
             current.createNodes(parts)
@@ -508,13 +348,19 @@ class Tableau:
         return [new_parts]
 
 
+def getTheories(fmla):
+    endBracket = fmla[1:].index("]")+1
+    theories = fmla[1:endBracket].split(",")
+    fmla = fmla[endBracket+1:].strip()
+    return (theories,fmla)
+
 def parse(fmla):
     global y
-    parts = fmla.split(";")
-    if len(parts)>1:
-        y = Tableau(parts[0],parts[1:])
+    if fmla[0]=="[":
+        theories, fmla = getTheories(fmla)
+        y = Tableau(fmla,theories)
     else:
-        y = Tableau(parts[0])
+        y = Tableau(fmla)
     y.isSatisfiable()
     if y.satisfiable == 4:
         return 0
